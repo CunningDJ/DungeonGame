@@ -4,7 +4,7 @@ from threading import Thread
 import os
 import random
 from math import sqrt
-import sys
+from queue import Queue
 
 players = []
 monster = {}
@@ -13,6 +13,9 @@ y_space = squareDim
 x_space = squareDim
 
 wall = {'wallVersion' : False}
+
+endProgram = object
+killQ = Queue()
 
 def main():        
     # Setting initial position of monster
@@ -45,30 +48,20 @@ def main():
     # Start the monster engine, draw engine, and player input engine
     drawThread.start()
     monsterThread.start()
-    playerInput()
+    playerInput(drawThread)
+    drawThread.join()
     
-def playerInput():
-    '''
-    # Scrapped player engine thread runner - threads were too slow/nonresponsive
-    #left, up , right, down
-    playerThreads = []
-    if len(players) >= 1:
-        playerThreads.append(Thread(target=playerEngine, args=(0,75,72,77,80,)))
-    if len(players) >= 2:
-        playerThreads.append(Thread(target=playerEngine, args=(1,97,119,100,115,)))
-    if len(players) >= 3:
-        playerThreads.append(Thread(target=playerEngine, args=(2,106,105,108,107,)))
-    
-    for playerThread in playerThreads:
-        playerThread.setDaemon(True)
-        playerThread.start()
-    '''
+def playerInput(drawThread):
+
     
     while True:
         key = ord(getwch())
         if key == 27: #ESC
-            os.system('cls')
-            exit()
+            killQ.put(endProgram)
+            #for player in players:
+                #player['alive'] = False
+            #drawThread.join()
+            break
             
         if key == 224: # Special keys (arrows, f keys, ins, del, etc.)
             key = ord(getwch())
@@ -106,28 +99,7 @@ def playerInput():
         
         
 
-'''        
-def playerEngine(playerIndex,leftKey,upKey,rightKey,downKey):
-    print('Player {} Thread started!'.format(playerIndex))
-    while True:
-        key = ord(getwch())
-        
-        if key == 224:
-            key = ord(getwch())
-        if key == upKey:
-            players[playerIndex]['y'] += 1
-            print('Player {} key: {}'.format(playerIndex,key))
-        elif key == downKey: # K (p3 down)
-            players[playerIndex]['y'] -= 1
-            print('Player {} key: {}'.format(playerIndex,key))
-        elif key == 108: # L (p3 right)
-            players[playerIndex]['x'] += 1
-            print('Player {} key: {}'.format(playerIndex,key))
-        elif key == 106: # J (p3 left)
-            players[playerIndex]['x'] -= 1
-            print('Player {} key: {}'.format(playerIndex,key))
-
-'''            
+     
             
             
 def monsterEngine():
@@ -182,6 +154,16 @@ def worldChecker(playersCopy, monsterCopy,currentTime):
                 players[playersCopy.index(player)]['alive'] = False
             else:
                 livingPlayers += 1
+    
+    if killQ.empty() != True:
+        item = killQ.get()
+        print('NOT EMPTY!')
+        #exit()
+        if item == endProgram:
+            os.system('cls')    # for windows
+            #os.system('clear') # for linux
+            print('################\nGAME OVER!\nTime: {0:.1f}\n################\n'.format(currentTime))
+            exit()
     
     # Ends the game if all of the players have been eaten
     if livingPlayers == 0:
@@ -251,8 +233,5 @@ def draw():
 
         worldChecker(playersCopy,monsterCopy,currentTime)
 
-
-            
-    # W-119 A-97 S-115 D-100
 
 main()
