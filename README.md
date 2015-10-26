@@ -8,8 +8,9 @@ Also, you can choose between 'looped' and solid wall. Designed for Windows.
 
 For the first version, the monster simply speeds up by 5% every 7 seconds, but I'll probably set it to asymptotally approach some difficult speed for following versions.
 
-Controls:
-Ctrl-C to quit.  ESC has a thread locking bug at the moment.
-Player 1: Arrow keys 
-Player 2: WASD 
-Player 3: IJKL
+Controls:</br>
+ESC to quit.</br>
+Player 1: Arrow keys</br>
+Player 2: WASD</br>
+Player 3: IJKL</br>
+
