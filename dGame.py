@@ -58,9 +58,6 @@ def playerInput(drawThread):
         key = ord(getwch())
         if key == 27: #ESC
             killQ.put(endProgram)
-            #for player in players:
-                #player['alive'] = False
-            #drawThread.join()
             break
             
         if key == 224: # Special keys (arrows, f keys, ins, del, etc.)
